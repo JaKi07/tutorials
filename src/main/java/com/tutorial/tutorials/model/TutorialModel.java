@@ -1,25 +1,21 @@
 package com.tutorial.tutorials.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Getter;
 
-@Entity
-@Table(name = "tutorials")
+@Document(collection = "tutorials")
 public class TutorialModel {
     @Getter
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private String id;
 
     @Getter
-    @Column(name = "title")
     private String title;
 
     @Getter
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "published")
     private Boolean published;
 
     public TutorialModel() {

@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,12 +19,13 @@ public class TutorialController {
     @GetMapping("/tutorials")
     public ResponseEntity<List<TutorialModel>> getAllTutorials(@RequestParam(required = false) String title) {
         try {
-            List<TutorialModel> tutorials = new ArrayList<TutorialModel>();
+            List<TutorialModel> tutorials;
 
-            if (title == null)
-                tutorials.addAll(tutorialRepository.findAll());
-            else
-                tutorials.addAll(tutorialRepository.findByTitleContainingIgnoreCase(title));
+            if (title == null) {
+                tutorials = tutorialRepository.findAll();
+            } else {
+                tutorials = tutorialRepository.findByTitleContainingIgnoreCase(title);
+            }
 
             if (tutorials.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -38,16 +38,17 @@ public class TutorialController {
     }
 
     @GetMapping("/tutorials/{id}")
-    public ResponseEntity<TutorialModel> getTutorialById(@PathVariable("id") long id) {
+    public ResponseEntity<TutorialModel> getTutorialById(@PathVariable("id") String id) {
         Optional<TutorialModel> tutorialData = tutorialRepository.findById(id);
 
-        return tutorialData.map(tutorialModel -> new ResponseEntity<>(tutorialModel, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return tutorialData.map(tutorialModel -> new ResponseEntity<>(tutorialModel, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/tutorials")
     public ResponseEntity<TutorialModel> createTutorial(@RequestBody TutorialModel tutorial) {
         try {
-            TutorialModel _tutorial = tutorialRepository.save(new TutorialModel(tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished()));
+            TutorialModel _tutorial = tutorialRepository.save(tutorial);
             return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -55,7 +56,7 @@ public class TutorialController {
     }
 
     @PutMapping("/tutorials/{id}")
-    public ResponseEntity<TutorialModel> updateTutorial(@PathVariable("id") long id, @RequestBody TutorialModel tutorial) {
+    public ResponseEntity<TutorialModel> updateTutorial(@PathVariable("id") String id, @RequestBody TutorialModel tutorial) {
         Optional<TutorialModel> tutorialData = tutorialRepository.findById(id);
 
         if (tutorialData.isPresent()) {
@@ -70,7 +71,7 @@ public class TutorialController {
     }
 
     @DeleteMapping("/tutorials/{id}")
-    public ResponseEntity<HttpStatus> deleteTutorial(@PathVariable("id") long id) {
+    public ResponseEntity<HttpStatus> deleteTutorial(@PathVariable("id") String id) {
         try {
             tutorialRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

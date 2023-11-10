@@ -35,3 +35,7 @@ You can access the H2 database console at http://localhost:8080/h2-console (if u
 - PUT /api/tutorials/{id}: Update an existing tutorial by ID.
 - DELETE /api/tutorial/{id}: Delete a tutorial by ID.
 - GET /health-check: Checks if the application is healthy
+
+
+### Update::
+MongoDB is used instead of h2 database, connection properties are present in application.properties
